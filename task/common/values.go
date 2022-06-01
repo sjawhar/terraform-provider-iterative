@@ -50,6 +50,7 @@ type Task struct {
 	PermissionSet string
 	Spot          Spot
 	Parallelism   uint16
+	Indexed       bool
 
 	Addresses []net.IP
 	Status    Status
