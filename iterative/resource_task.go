@@ -171,6 +171,12 @@ func resourceTask() *schema.Resource {
 				Optional: true,
 				Default:  1,
 			},
+			"indexed": {
+				Type:     schema.TypeBool,
+				ForceNew: true,
+				Optional: true,
+				Default:  false,
+			},
 			"environment": {
 				Type:     schema.TypeMap,
 				ForceNew: true,
@@ -420,6 +426,7 @@ func resourceTaskBuild(ctx context.Context, d *schema.ResourceData, m interface{
 		RemoteStorage: remoteStorage,
 		Spot:          common.Spot(d.Get("spot").(float64)),
 		Parallelism:   uint16(d.Get("parallelism").(int)),
+		Indexed:       bool(d.Get("indexed").(bool)),
 		PermissionSet: d.Get("permission_set").(string),
 	}
 

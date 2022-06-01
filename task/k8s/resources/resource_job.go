@@ -44,6 +44,7 @@ func NewJob(client *client.Client, identifier common.Identifier, persistentVolum
 			j.Attributes.NodeSelector[key] = value
 		}
 	}
+	j.Attributes.Indexed = task.Indexed
 	return j
 }
 
@@ -54,6 +55,7 @@ type Job struct {
 		Task         common.Task
 		Parallelism  uint16
 		NodeSelector map[string]string
+		Indexed      bool
 		Addresses    []net.IP
 		Status       common.Status
 		Events       []common.Event

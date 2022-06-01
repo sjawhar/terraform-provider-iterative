@@ -61,6 +61,7 @@ type Task struct {
 	PermissionSet string
 	Spot          Spot
 	Parallelism   uint16
+	Indexed       bool
 
 	RemoteStorage *RemoteStorage
 
