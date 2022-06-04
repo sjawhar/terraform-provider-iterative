@@ -62,6 +62,7 @@ type Task struct {
 	Spot          Spot
 	Parallelism   uint16
 	Indexed       bool
+	Completions   uint16
 
 	RemoteStorage *RemoteStorage
 
