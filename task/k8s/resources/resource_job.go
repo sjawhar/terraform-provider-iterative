@@ -37,6 +37,8 @@ func NewJob(client *client.Client, identifier common.Identifier, persistentVolum
 	j.Dependencies.PermissionSet = permissionSet
 	j.Attributes.Task = task
 	j.Attributes.Parallelism = task.Parallelism
+	j.Attributes.Indexed = task.Indexed
+	j.Attributes.Completions = int32(task.Completions)
 	j.Attributes.NodeSelector = map[string]string{}
 	for _, selector := range strings.Split(string(client.Cloud.Region), ",") {
 		key, value, is_found := strings.Cut(selector, "=")
@@ -44,7 +46,6 @@ func NewJob(client *client.Client, identifier common.Identifier, persistentVolum
 			j.Attributes.NodeSelector[key] = value
 		}
 	}
-	j.Attributes.Indexed = task.Indexed
 	return j
 }
 
@@ -54,6 +55,7 @@ type Job struct {
 	Attributes struct {
 		Task         common.Task
 		Parallelism  uint16
+		Completions  int32
 		NodeSelector map[string]string
 		Indexed      bool
 		Addresses    []net.IP
@@ -131,11 +133,12 @@ func (j *Job) Create(ctx context.Context) error {
 	jobTerminationGracePeriod := int64(30)
 
 	jobBackoffLimit := int32(math.MaxInt32)
-	jobCompletions := int32(j.Attributes.Task.Parallelism)
-	jobParallelism := int32(j.Attributes.Task.Parallelism)
+	jobParallelism := int32(j.Attributes.Parallelism)
 
 	var jobCompletionMode kubernetes_batch.CompletionMode
-	if jobParallelism > 1 {
+	var jobCompletions *int32 = nil
+	if j.Attributes.Completions > 0 {
+		jobCompletions = &(j.Attributes.Completions)
 		jobCompletionMode = kubernetes_batch.IndexedCompletion
 	} else {
 		jobCompletionMode = kubernetes_batch.NonIndexedCompletion
@@ -224,7 +227,7 @@ func (j *Job) Create(ctx context.Context) error {
 		Spec: kubernetes_batch.JobSpec{
 			ActiveDeadlineSeconds: &jobActiveDeadlineSeconds,
 			BackoffLimit:          &jobBackoffLimit,
-			Completions:           &jobCompletions,
+			Completions:           jobCompletions,
 			Parallelism:           &jobParallelism,
 			CompletionMode:        &jobCompletionMode,
 			// We don't want jobs to delete themselves upon completion, because

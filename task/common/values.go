@@ -51,6 +51,7 @@ type Task struct {
 	Spot          Spot
 	Parallelism   uint16
 	Indexed       bool
+	Completions   uint16
 
 	Addresses []net.IP
 	Status    Status
