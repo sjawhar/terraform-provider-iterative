@@ -54,6 +54,12 @@ type RemoteStorage struct {
 	Config map[string]string
 }
 
+type Volume struct {
+	Server     string
+	ServerPath string
+	MountPath  string
+}
+
 type Task struct {
 	Size          Size
 	Environment   Environment
@@ -63,6 +69,7 @@ type Task struct {
 	Parallelism   uint16
 	Indexed       bool
 	Completions   uint16
+	Volumes       []Volume
 
 	RemoteStorage *RemoteStorage
 
