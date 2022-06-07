@@ -200,6 +200,23 @@ func (j *Job) Create(ctx context.Context) error {
 		})
 	}
 
+	for idx_volume, volume := range j.Attributes.Task.Volumes {
+		var volName = j.Identifier + "-vol" + fmt.Sprint(idx_volume)
+		jobVolumes = append(jobVolumes, kubernetes_core.Volume{
+			Name: volName,
+			VolumeSource: kubernetes_core.VolumeSource{
+				NFS: &kubernetes_core.NFSVolumeSource{
+					Server: volume.Server,
+					Path:   volume.ServerPath,
+				},
+			},
+		})
+		jobVolumeMounts = append(jobVolumeMounts, kubernetes_core.VolumeMount{
+			Name:      volName,
+			MountPath: volume.MountPath,
+		})
+	}
+
 	// Running with /bin/sh -c as the ENTRYPOINT, this script will be in charge of allowing
 	// seamless data synchronization. The first branch of the conditional will run on destroy
 	// allowing the provider to manage the pod lifecycle without letting it exit on "completion".

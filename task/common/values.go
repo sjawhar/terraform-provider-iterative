@@ -41,7 +41,12 @@ type Event struct {
 	Code        string
 	Description []string
 }
-type Storage struct{}
+
+type Volume struct {
+	Server     string
+	ServerPath string
+	MountPath  string
+}
 
 type Task struct {
 	Size          Size
@@ -52,6 +57,7 @@ type Task struct {
 	Parallelism   uint16
 	Indexed       bool
 	Completions   uint16
+	Volumes       []Volume
 
 	Addresses []net.IP
 	Status    Status

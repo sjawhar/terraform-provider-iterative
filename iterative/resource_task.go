@@ -141,6 +141,29 @@ func resourceTask() *schema.Resource {
 					},
 				},
 			},
+			"nfs_volume": {
+				Optional: true,
+				Type:     schema.TypeSet,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"server": {
+							Type:     schema.TypeString,
+							ForceNew: true,
+							Required: true,
+						},
+						"server_path": {
+							Type:     schema.TypeString,
+							ForceNew: true,
+							Required: true,
+						},
+						"mount_path": {
+							Type:     schema.TypeString,
+							ForceNew: true,
+							Required: true,
+						},
+					},
+				},
+			},
 			"parallelism": {
 				Type:     schema.TypeInt,
 				ForceNew: true,
@@ -350,6 +373,16 @@ func resourceTaskBuild(ctx context.Context, d *schema.ResourceData, m interface{
 		directory_out = storage["output"].(string)
 	}
 
+	volumes := []common.Volume{}
+	for _, rawVolume := range d.Get("nfs_volume").(*schema.Set).List() {
+		volume := rawVolume.(map[string]interface{})
+		volumes = append(volumes, common.Volume{
+			Server:     volume["server"].(string),
+			ServerPath: volume["server_path"].(string),
+			MountPath:  volume["mount_path"].(string),
+		})
+	}
+
 	t := common.Task{
 		Size: common.Size{
 			Machine: d.Get("machine").(string),
@@ -373,6 +406,7 @@ func resourceTaskBuild(ctx context.Context, d *schema.ResourceData, m interface{
 		Parallelism:   uint16(d.Get("parallelism").(int)),
 		Completions:   uint16(d.Get("completions").(int)),
 		PermissionSet: d.Get("permission_set").(string),
+		Volumes:       volumes,
 	}
 
 	id, err := common.ParseIdentifier(d.Id())
