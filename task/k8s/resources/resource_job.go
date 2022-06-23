@@ -206,8 +206,9 @@ func (j *Job) Create(ctx context.Context) error {
 			Name: volName,
 			VolumeSource: kubernetes_core.VolumeSource{
 				NFS: &kubernetes_core.NFSVolumeSource{
-					Server: volume.Server,
-					Path:   volume.ServerPath,
+					Server:   volume.Server,
+					Path:     volume.ServerPath,
+					ReadOnly: volume.ReadOnly,
 				},
 			},
 		})

@@ -185,6 +185,12 @@ func resourceTask() *schema.Resource {
 							ForceNew: true,
 							Required: true,
 						},
+						"read_only": {
+							Type:     schema.TypeBool,
+							ForceNew: true,
+							Optional: true,
+							Default:  false,
+						},
 					},
 				},
 			},
@@ -433,6 +439,7 @@ func resourceTaskBuild(ctx context.Context, d *schema.ResourceData, m interface{
 			Server:     volume["server"].(string),
 			ServerPath: volume["server_path"].(string),
 			MountPath:  volume["mount_path"].(string),
+			ReadOnly:   volume["read_only"].(bool),
 		})
 	}
 

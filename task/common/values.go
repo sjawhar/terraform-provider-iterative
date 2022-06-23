@@ -58,6 +58,7 @@ type Volume struct {
 	Server     string
 	ServerPath string
 	MountPath  string
+	ReadOnly   bool
 }
 
 type Task struct {
